@@ -1,4 +1,9 @@
 {
+  "main": "project/index.js",
+  "scripts": {
+    "dev": "nodemon project/index.js",
+    "start": "node project/index.js"
+  },
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
