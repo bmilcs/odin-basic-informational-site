@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
   const filePath = path.join(
     __dirname,
     "html",
-    req.url === "/" ? "index.html" : req.url,
+    req.url === "/" ? "index.html" : `${req.url}.html`,
   );
 
   // read the file path
