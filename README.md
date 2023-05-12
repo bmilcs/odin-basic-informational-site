@@ -2,7 +2,13 @@
 
 Welcome to Bryan Miller's Basic Informational Site Project, the [twenty fifth assignment](https://www.theodinproject.com/lessons/nodejs-basic-informational-site) within the Odin Project curriculum. The goal of this repo is to practice the following skill sets:
 
-- NodeJS Fundamentals
+- NodeJS Fundamentals:
+  - `fs`
+  - `path`
+  - `http`
+- npm Packages:
+  - `dotenv`
+  - `nodemon`
 
 ## Links
 
