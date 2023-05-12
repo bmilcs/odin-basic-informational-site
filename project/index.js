@@ -4,9 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const myLogger = require("./logger");
 
-const HOST = process.env.HOST || "localhost";
-const PORT = process.env.PORT || 8080;
-
 const server = http.createServer((req, res) => {
   myLogger.emit("log", `Request received on URL: ${req.url}`);
 
@@ -17,7 +14,7 @@ const server = http.createServer((req, res) => {
     req.url === "/" ? "index.html" : `${req.url}.html`,
   );
 
-  // read the file path
+  // retrieve the contents of the requested file
   fs.readFile(filePath, "utf-8", (pageError, pageData) => {
     if (pageError) {
       // something went wrong with the original read file
@@ -27,8 +24,8 @@ const server = http.createServer((req, res) => {
         myLogger.emit("error", `File not found: ${req.url}`);
 
         const errorPagePath = path.join(__dirname, "html", "404.html");
+
         fs.readFile(errorPagePath, "utf-8", (errorPageError, errorPageData) => {
-          // error page not found:
           if (errorPageError) {
             myLogger.emit("error", "404 Page Not Found");
             throw errorPageError;
@@ -51,6 +48,8 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, HOST, () => {
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
   myLogger.emit("log", `Server launched on port: ${HOST}:${PORT}`);
 });
