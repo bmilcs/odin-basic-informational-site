@@ -12,7 +12,7 @@ Welcome to Bryan Miller's Basic Informational Site Project, the [twenty fifth as
 
 ## Links
 
-- [Live Demo]()
+- [Live Demo](https://replit.com/@bmilcsxreplit/Basic-Informational-Site-NodeJS)
 - [My Odin Project Progress](https://github.com/bmilcs/odin-project)
 
 ## Summary
