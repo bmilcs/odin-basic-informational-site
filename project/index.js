@@ -1,6 +1,6 @@
 require("dotenv").config();
 const http = require("http");
-const fs = require("fs/promises");
+const fsp = require("fs/promises");
 const path = require("path");
 const myLogger = require("./logger");
 
@@ -16,7 +16,7 @@ const server = http.createServer(async (req, res) => {
 
   // retrieve file & send response
   try {
-    const pageData = await fs.readFile(filePath, "utf-8");
+    const pageData = await fsp.readFile(filePath, "utf-8");
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(pageData);
     myLogger.emit(
@@ -29,7 +29,7 @@ const server = http.createServer(async (req, res) => {
       myLogger.emit("error", `File not found: "${filePath}"`);
       try {
         const errorPagePath = path.join(__dirname, "html", "404.html");
-        const errorPageData = await fs.readFile(errorPagePath, "utf-8");
+        const errorPageData = await fsp.readFile(errorPagePath, "utf-8");
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(errorPageData);
         myLogger.emit("log", "404 Page sent to client.");
@@ -38,13 +38,16 @@ const server = http.createServer(async (req, res) => {
         res.end(`Server error: "${errorPageError.code}"`);
         myLogger.emit(
           "error",
-          `Server error: "${errorPageError.code}" (404 File)`,
+          `Server error: "${errorPageError.code}" (404 file read failure)`,
         );
       }
     } else {
       res.writeHead(500);
       res.end(`Server error: ${pageError.code}`);
-      myLogger.emit("error", `Server-related error: "${pageError.code}"`);
+      myLogger.emit(
+        "error",
+        `Server-related error: "${pageError.code}" (Requested file read failure)`,
+      );
     }
   }
 
