@@ -1,61 +1,59 @@
 require("dotenv").config();
-const http = require("http");
-const fsp = require("fs/promises");
+const fs = require("fs");
 const path = require("path");
 const myLogger = require("./logger");
+const express = require("express");
 
-const server = http.createServer(async (req, res) => {
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(logIncomingRequest);
+app.use(sendFileIfExists);
+app.use(handleErrors);
+
+app.listen(port, function appStarted() {
+  myLogger.emit("log", `Server launched on port: ${port}`);
+});
+
+function logIncomingRequest(req, res, next) {
   myLogger.emit("log", `Request received for URL: "${req.url}"`);
+  next();
+}
 
-  // create full path of the requested page
+function sendFileIfExists(req, res, next) {
   const filePath = path.join(
     __dirname,
     "html",
     req.url === "/" ? "index.html" : `${req.url}.html`,
   );
 
-  // retrieve file & send response
-  try {
-    const pageData = await fsp.readFile(filePath, "utf-8");
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(pageData);
-    myLogger.emit(
-      "log",
-      `Requested page successfully sent to client: "${filePath}"`,
-    );
-  } catch (pageError) {
-    const isFileNotFound = pageError.code === "ENOENT";
-    if (isFileNotFound) {
-      myLogger.emit("error", `File not found: "${filePath}"`);
-      try {
-        const errorPagePath = path.join(__dirname, "html", "404.html");
-        const errorPageData = await fsp.readFile(errorPagePath, "utf-8");
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(errorPageData);
-        myLogger.emit("log", "404 Page sent to client.");
-      } catch (errorPageError) {
-        res.writeHead(500);
-        res.end(`Server error: "${errorPageError.code}"`);
-        myLogger.emit(
-          "error",
-          `Server error: "${errorPageError.code}" (404 file read failure)`,
-        );
-      }
-    } else {
-      res.writeHead(500);
-      res.end(`Server error: ${pageError.code}`);
+  fs.readFile(filePath, "utf-8", (err, data) => {
+    if (err) next({ status: 404, filePath });
+    else {
       myLogger.emit(
-        "error",
-        `Server-related error: "${pageError.code}" (Requested file read failure)`,
+        "log",
+        `Requested page successfully sent to client: "${filePath}"`,
       );
+      res.send(data);
     }
+  });
+}
+
+function handleErrors(err, req, res, next) {
+  const statusCode = err.status || 500;
+  const filePath = err.filePath;
+
+  myLogger.emit(
+    "error",
+    `Failed to send requested page to client:
+    Error "${statusCode}"
+    Path: "${filePath}"`,
+  );
+
+  if (statusCode === 404) {
+    const errorPagePath = path.join(__dirname, "html", "404.html");
+    res.status(statusCode).sendFile(errorPagePath);
+  } else {
+    res.status(statusCode).send(`Server error: "${statusCode}"`);
   }
-
-  myLogger.emit("log", "Request handling complete.");
-});
-
-const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
-  myLogger.emit("log", `Server launched on port: ${PORT}`);
-});
+}
