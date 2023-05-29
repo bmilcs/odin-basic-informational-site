@@ -1,4 +1,4 @@
-# Odin Project #25: Basic Informational Site (NodeJS)
+# Odin Project #25: Basic Informational Site (NodeJS & Express)
 
 Welcome to Bryan Miller's Basic Informational Site Project, the [twenty fifth assignment](https://www.theodinproject.com/lessons/nodejs-basic-informational-site) within the Odin Project curriculum. The goal of this repo is to practice the following skill sets:
 
@@ -8,7 +8,13 @@ Welcome to Bryan Miller's Basic Informational Site Project, the [twenty fifth as
   - `http`: create web servers that listen for requests & send responses
   - `EventEmitter`: create backend event listeners, allowing us to trigger events
   - custom `modules`: allows us to organize & modularize our code
+- Express Fundamentals ([refactored here](https://github.com/bmilcs/odin-basic-informational-site/blob/express_refactor/project/index.js))
+  - Middleware Functions
+  - `send`
+  - `sendFile`
+  - Error handling
 - npm Packages:
+  - `express`: node framework
   - `dotenv`: let's us import environmental variables from `.env` files
   - `nodemon`: automatically restarts the server on file changes
 - Bootstrap
